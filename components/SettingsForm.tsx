@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { updateFormSettings } from '@/app/actions/forms';
 import ShareBox from '@/components/ShareBox';
+import Spinner from '@/components/Spinner';
 import type { Form } from '@/lib/types';
 
 const toLocalInput = (iso: string | null) => (iso ? new Date(iso).toISOString().slice(0, 16) : '');
@@ -158,6 +159,7 @@ export default function SettingsForm({ form }: { form: Form }) {
       <div className="flex items-center justify-end gap-3">
         {message && <span className="hint">{message}</span>}
         <button className="btn-primary" onClick={save} disabled={pending}>
+          {pending && <Spinner />}
           {pending ? 'Salvando...' : 'Salvar configurações'}
         </button>
       </div>

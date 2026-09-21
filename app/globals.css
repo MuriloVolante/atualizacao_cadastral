@@ -105,3 +105,70 @@ body {
   font-size: 0.75rem;
   font-weight: 500;
 }
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.spin {
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes nav-progress-slide {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+.nav-progress {
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 3px;
+  overflow: hidden;
+  background: rgb(29 78 216 / 0.15);
+  z-index: 70;
+}
+.nav-progress::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, var(--brand), transparent);
+  animation: nav-progress-slide 0.9s ease-in-out infinite;
+}
+.nav-progress-badge {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 70;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  border: 1px solid var(--line);
+  background: #fff;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+  box-shadow: 0 6px 20px rgb(16 24 40 / 0.12);
+}
+.nav-progress-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+  background: var(--brand);
+  animation: spin 1s linear infinite;
+  box-shadow: 0 0 0 3px rgb(29 78 216 / 0.15);
+}
+body.is-loading,
+body.is-loading a,
+body.is-loading button {
+  cursor: progress;
+}
+.btn-primary:disabled,
+.btn-ghost:disabled,
+.btn-danger:disabled {
+  cursor: progress;
+}

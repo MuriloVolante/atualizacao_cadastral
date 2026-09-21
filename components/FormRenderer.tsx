@@ -8,6 +8,7 @@ import { validateAnswer } from '@/lib/validation';
 import type { AnswerValue } from '@/lib/validation';
 import type { Form, Question } from '@/lib/types';
 import { MIME_BY_EXT } from '@/lib/types';
+import Spinner from '@/components/Spinner';
 
 type Props = { form: Form; questions: Question[]; preview?: boolean };
 
@@ -155,7 +156,8 @@ export default function FormRenderer({ form, questions, preview = false }: Props
 
       <div className="flex justify-end">
         <button className="btn-primary" disabled={sending || preview}>
-          {preview ? 'Enviar (desativado no preview)' : sending ? 'Enviando...' : 'Enviar respostas'}
+          {sending && <Spinner />}
+          {preview ? 'Enviar (desativado no preview)' : sending ? 'Enviando resposta...' : 'Enviar respostas'}
         </button>
       </div>
     </form>

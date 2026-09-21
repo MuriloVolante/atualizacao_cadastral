@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import FormTabs from '@/components/FormTabs';
 
@@ -12,6 +12,14 @@ export default async function FormLayout({
 }) {
   const { id } = await params;
   const supabase = await createClient();
+  const { data: auth } = await supabase.auth.getUser();
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('must_change_password')
+    .eq('id', auth.user?.id ?? '')
+    .maybeSingle();
+  if (profile?.must_change_password) redirect('/trocar-senha');
+
   const { data: form } = await supabase.from('forms').select('id, name, slug').eq('id', id).maybeSingle();
   if (!form) notFound();
 

@@ -1,4 +1,5 @@
 import { createForm } from '@/app/actions/forms';
+import SubmitButton from '@/components/SubmitButton';
 
 export default function NovoFormulario() {
   return (
@@ -14,7 +15,7 @@ export default function NovoFormulario() {
           <label className="label">Descrição</label>
           <textarea name="description" rows={3} className="input" placeholder="Confirme seus dados cadastrais..." />
         </div>
-        <button className="btn-primary">Criar e abrir editor</button>
+        <SubmitButton pendingLabel="Criando formulário...">Criar e abrir editor</SubmitButton>
       </form>
     </div>
   );

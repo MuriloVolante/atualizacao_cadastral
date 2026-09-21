@@ -129,3 +129,12 @@ export const MIME_BY_EXT: Record<string, string> = {
   DOCX: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
   XLSX: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
 };
+
+export type Profile = {
+  id: string;
+  username: string;
+  email: string;
+  must_change_password: boolean;
+  created_at: string;
+  updated_at: string;
+};

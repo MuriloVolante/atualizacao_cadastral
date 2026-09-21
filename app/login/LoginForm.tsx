@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import Spinner from '@/components/Spinner';
 
 export default function LoginForm() {
   const router = useRouter();
@@ -39,6 +40,7 @@ export default function LoginForm() {
       </div>
       {error && <p className="text-sm text-red-600">{error}</p>}
       <button className="btn-primary w-full" disabled={loading}>
+        {loading && <Spinner />}
         {loading ? 'Entrando...' : 'Entrar'}
       </button>
     </form>

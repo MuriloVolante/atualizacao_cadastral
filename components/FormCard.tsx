@@ -1,13 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import type { Form } from '@/lib/types';
 import { STATUS_LABEL } from '@/lib/types';
 import { formatDateTimeBR } from '@/lib/format';
 import { deleteForm, setFormStatus } from '@/app/actions/forms';
 import ShareBox from '@/components/ShareBox';
+import Spinner from '@/components/Spinner';
 
 const STATUS_STYLE: Record<string, string> = {
   rascunho: 'bg-gray-100 text-gray-700',
@@ -20,6 +21,18 @@ export default function FormCard({ form }: { form: Form }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [share, setShare] = useState(false);
+  const [pending, startTransition] = useTransition();
+  const [action, setAction] = useState<string | null>(null);
+
+  function run(label: string, fn: () => Promise<void>) {
+    setAction(label);
+    setOpen(false);
+    startTransition(async () => {
+      await fn();
+      setAction(null);
+      router.refresh();
+    });
+  }
 
   return (
     <div className="card p-5">
@@ -28,6 +41,12 @@ export default function FormCard({ form }: { form: Form }) {
           <div className="flex items-center gap-2">
             <h2 className="font-medium">{form.name}</h2>
             <span className={`chip ${STATUS_STYLE[form.status]}`}>{STATUS_LABEL[form.status]}</span>
+            {pending && (
+              <span className="hint inline-flex items-center gap-1">
+                <Spinner />
+                {action === 'excluir' ? 'Excluindo...' : 'Atualizando...'}
+              </span>
+            )}
           </div>
           <p className="hint mt-1">
             {form.responses_count ?? 0} respostas · Criado em {formatDateTimeBR(form.created_at)} · Alterado em{' '}
@@ -46,7 +65,7 @@ export default function FormCard({ form }: { form: Form }) {
             Respostas
           </Link>
           <div className="relative">
-            <button className="btn-ghost px-2" onClick={() => setOpen(!open)} aria-label="Mais ações">
+            <button className="btn-ghost px-2" disabled={pending} onClick={() => setOpen(!open)} aria-label="Mais ações">
               ⋮
             </button>
             {open && (
@@ -69,11 +88,7 @@ export default function FormCard({ form }: { form: Form }) {
                 {form.status !== 'ativo' && (
                   <button
                     className="block w-full px-3 py-2 text-left text-sm hover:bg-gray-50"
-                    onClick={async () => {
-                      await setFormStatus(form.id, 'ativo');
-                      setOpen(false);
-                      router.refresh();
-                    }}
+                    onClick={() => run('ativar', () => setFormStatus(form.id, 'ativo'))}
                   >
                     Ativar
                   </button>
@@ -81,22 +96,16 @@ export default function FormCard({ form }: { form: Form }) {
                 {form.status === 'ativo' && (
                   <button
                     className="block w-full px-3 py-2 text-left text-sm hover:bg-gray-50"
-                    onClick={async () => {
-                      await setFormStatus(form.id, 'encerrado');
-                      setOpen(false);
-                      router.refresh();
-                    }}
+                    onClick={() => run('encerrar', () => setFormStatus(form.id, 'encerrado'))}
                   >
                     Encerrar
                   </button>
                 )}
                 <button
                   className="block w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50"
-                  onClick={async () => {
+                  onClick={() => {
                     if (!confirm('Excluir este formulário e todas as respostas?')) return;
-                    await deleteForm(form.id);
-                    setOpen(false);
-                    router.refresh();
+                    run('excluir', () => deleteForm(form.id));
                   }}
                 >
                   Excluir

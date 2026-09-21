@@ -15,6 +15,7 @@ import QuestionCard from './QuestionCard';
 import { newQuestion, toEditorTree } from './types';
 import type { EditorQuestion } from './types';
 import FormRenderer from '@/components/FormRenderer';
+import Spinner from '@/components/Spinner';
 import { saveForm } from '@/app/actions/forms';
 import { slugify } from '@/lib/format';
 import type { Form, Question } from '@/lib/types';
@@ -174,6 +175,7 @@ export default function Editor({ form, questions }: { form: Form; questions: Que
             Configurações
           </Link>
           <button className="btn-primary" onClick={save} disabled={pending}>
+            {pending && <Spinner />}
             {pending ? 'Salvando...' : 'Salvar'}
           </button>
         </div>

@@ -1,0 +1,4 @@
+-- Schema da Plataforma de Formulários (v1.0)
+-- Aplicado no projeto Supabase: beiejxqnulrmtnzgioml
+-- Tabelas, RLS, view de contagem, bucket de anexos e RPC de envio público.
+-- O conteúdo aplicado está descrito no README.

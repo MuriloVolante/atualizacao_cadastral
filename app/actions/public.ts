@@ -18,44 +18,16 @@ export async function submitResponse(payload: {
 }) {
   const supabase = await createClient();
 
-  const { data: response, error } = await supabase
-    .from('responses')
-    .insert({
-      form_id: payload.formId,
-      respondent_identifier: payload.respondentIdentifier,
-      completed_at: new Date().toISOString(),
-    })
-    .select('id')
-    .single();
+  const { data, error } = await supabase.rpc('submit_response', {
+    p_form_id: payload.formId,
+    p_identifier: payload.respondentIdentifier,
+    p_answers: payload.answers,
+    p_files: payload.files,
+  });
 
-  if (error || !response) {
+  if (error) {
     return { ok: false as const, error: 'Não foi possível registrar sua resposta.' };
   }
 
-  if (payload.answers.length) {
-    const { error: answersError } = await supabase.from('response_answers').insert(
-      payload.answers.map((a) => ({
-        response_id: response.id,
-        question_id: a.questionId,
-        value: a.value ?? null,
-      })),
-    );
-    if (answersError) return { ok: false as const, error: answersError.message };
-  }
-
-  if (payload.files.length) {
-    const { error: filesError } = await supabase.from('files').insert(
-      payload.files.map((f) => ({
-        response_id: response.id,
-        question_id: f.questionId,
-        filename: f.filename,
-        storage_path: f.storagePath,
-        size: f.size,
-        mime_type: f.mimeType,
-      })),
-    );
-    if (filesError) return { ok: false as const, error: filesError.message };
-  }
-
-  return { ok: true as const, responseId: response.id };
+  return { ok: true as const, responseId: data as string };
 }
